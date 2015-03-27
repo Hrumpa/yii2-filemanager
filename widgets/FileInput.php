@@ -100,6 +100,11 @@ class FileInput extends InputWidget
     public $pasteData = self::DATA_URL;
 
     /**
+     * @var string This data will be inserted in input field
+     */
+    public $customImagesPath = '';
+
+    /**
      * @var array widget html options
      */
     public $options = ['class' => 'form-control'];
@@ -148,11 +153,15 @@ class FileInput extends InputWidget
             );
         }
 
+        if (!empty($this->customImagesPath)) {
+            $this->customImagesPath = '?path=' . $this->customImagesPath;
+        }
+
         $modal = $this->renderFile('@vendor/pendalf89/yii2-filemanager/views/file/modal.php', [
             'inputId' => $this->options['id'],
             'btnId' => $this->buttonOptions['id'],
             'frameId' => $this->options['id'] . '-frame',
-            'frameSrc' => Url::to(['/filemanager/file/filemanager']),
+            'frameSrc' => Url::to(['/filemanager/file/filemanager']) . $this->customImagesPath,
             'thumb' => $this->thumb,
             'imageContainer' => $this->imageContainer,
             'pasteData' => $this->pasteData,

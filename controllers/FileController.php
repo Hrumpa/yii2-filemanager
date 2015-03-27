@@ -46,19 +46,24 @@ class FileController extends Controller
     {
         $this->layout = '@vendor/pendalf89/yii2-filemanager/views/layouts/main';
         $model = new Mediafile();
-        $dataProvider = $model->search();
+        $customPath = Yii::$app->request->get('path');
+        $dataProvider = $model->search($customPath);
         $dataProvider->pagination->defaultPageSize = 15;
 
         return $this->render('filemanager', [
             'model' => $model,
             'dataProvider' => $dataProvider,
+            'customPath' => $customPath,
         ]);
     }
 
     public function actionUploadmanager()
     {
         $this->layout = '@vendor/pendalf89/yii2-filemanager/views/layouts/main';
-        return $this->render('uploadmanager', ['model' => new Mediafile()]);
+        return $this->render('uploadmanager', [
+            'model' => new Mediafile(),
+            'customPath' => Yii::$app->request->get('path'),
+        ]);
     }
 
     /**
@@ -71,6 +76,10 @@ class FileController extends Controller
 
         $model = new Mediafile();
         $routes = $this->module->routes;
+        // Add custom upload path if available
+        if (Yii::$app->request->get('path')) {
+            $routes['customPath'] = Yii::$app->request->get('path');
+        }
         $rename = $this->module->rename;
         $model->saveUploadedFile($routes, $rename);
         $bundle = FilemanagerAsset::register($this->view);

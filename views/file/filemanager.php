@@ -9,10 +9,20 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $searchModel pendalf89\filemanager\models\Mediafile */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $customPath string */
 $this->params['moduleBundle'] = FilemanagerAsset::register($this);
+
+$pathUploadmanager = ['file/uploadmanager'];
+if ($customPath) {
+    $pathUploadmanager['path'] = $customPath;
+}
 ?>
 
 <header id="header"><span class="glyphicon glyphicon-picture"></span> <?= Module::t('main', 'File manager') ?></header>
+
+<?php if ($customPath) { ?>
+    <p><?= Module::t('main', 'Current base path: {path}', ['path' => $customPath]); ?></p>
+<?php } ?>
 
 <div id="filemanager" data-url-info="<?= Url::to(['file/info']) ?>">
     <?= ListView::widget([
@@ -31,7 +41,7 @@ $this->params['moduleBundle'] = FilemanagerAsset::register($this);
 
     <div class="dashboard">
         <p><?= Html::a('<span class="glyphicon glyphicon-upload"></span> ' . Module::t('main', 'Upload manager'),
-                ['file/uploadmanager'], ['class' => 'btn btn-default']) ?></p>
+                $pathUploadmanager, ['class' => 'btn btn-default']) ?></p>
         <div id="fileinfo">
 
         </div>

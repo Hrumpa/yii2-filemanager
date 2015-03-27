@@ -119,9 +119,13 @@ class Mediafile extends ActiveRecord
      */
     public function saveUploadedFile(array $routes, $rename = false)
     {
-        $year = date('Y', time());
-        $month = date('m', time());
-        $structure = "$routes[baseUrl]/$routes[uploadPath]/$year/$month";
+        if (empty($routes['customPath'])) {
+            $year = date('Y', time());
+            $month = date('m', time());
+            $structure = "$routes[baseUrl]/$routes[uploadPath]/$year/$month";
+        } else {
+            $structure = "$routes[baseUrl]/$routes[customPath]";
+        }
         $basePath = Yii::getAlias($routes['basePath']);
         $absolutePath = "$basePath/$structure";
 
@@ -132,7 +136,7 @@ class Mediafile extends ActiveRecord
 
         // get file instance
         $this->file = UploadedFile::getInstance($this, 'file');
-        
+
         //if a file with the same name already exist append a number
         $counter = 0;
         do{
@@ -142,12 +146,12 @@ class Mediafile extends ActiveRecord
                 //if we don't want to rename we finish the call here
                 if($rename == false)
                     return false;
-                $filename = $this->file->baseName. $counter.'.'. $this->file->extension;  
+                $filename = $this->file->baseName. $counter.'.'. $this->file->extension;
             }
-            $url = "$structure/$filename"; 
+            $url = "$structure/$filename";
             $counter++;
         }while(self::findByUrl($url)); // checks for existing url in db
-       
+
         // save original uploaded file
         $this->file->saveAs("$absolutePath/$filename");
         $this->filename = $filename;
@@ -384,9 +388,12 @@ class Mediafile extends ActiveRecord
      * Creates data provider instance with search query applied
      * @return ActiveDataProvider
      */
-    public function search()
+    public function search($path = null)
     {
         $query = self::find()->orderBy('created_at DESC');
+        if ($path) {
+            $query->where(['like', 'url', $path]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
