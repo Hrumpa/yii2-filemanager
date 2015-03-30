@@ -183,10 +183,11 @@ class Mediafile extends ActiveRecord
         foreach ($presets as $alias => $preset) {
             $width = $preset['size'][0];
             $height = $preset['size'][1];
+			$mode = (!empty($preset['inset']) && $preset['inset'] == true) ? 'inset' : 'outbound';
 
             $thumbUrl = "$dirname/$filename-{$width}x{$height}.$extension";
 
-            Image::thumbnail("$basePath/{$this->url}", $width, $height)->save("$basePath/$thumbUrl");
+            Image::thumbnail("$basePath/{$this->url}", $width, $height, $mode)->save("$basePath/$thumbUrl");
 
             $thumbs[$alias] = $thumbUrl;
         }
